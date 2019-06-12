@@ -28,14 +28,15 @@ public class GLMTest {
                 .from(inputStream)
                 //.selectColumn(col_rank).asCategory().asInput("rank")
                 //.selectColumn(col_rank).asNumeric().asInput("rank")
+                //.selectColumn(col_gpa).transform(cell -> cell.equals("1") ? 1.0 : 0.0).asInput("gpa")
 
-                .selectColumn(col_gpa).transform(cell -> cell.equals("1") ? 1.0 : 0.0).asInput("gpa")
                 .selectColumn(col_rank2).transform(cell -> cell.equals("1") ? 1.0 : 0.0).asInput("rank2")
                 .selectColumn(col_rank3).transform(cell -> cell.equals("1") ? 1.0 : 0.0).asInput("rank3")
                 .selectColumn(col_rank4).transform(cell -> cell.equals("1") ? 1.0 : 0.0).asInput("rank4")
 
-                .selectColumn(col_gre).asNumeric().asInput("gre")
                 .selectColumn(col_gpa).asNumeric().asInput("gpa")
+                .selectColumn(col_gre).asNumeric().asInput("gre")
+
                 .selectColumn(col_admit).transform(cell -> cell.equals("1") ? 1.0 : 0.0).asOutput("admit")
 
 
@@ -58,15 +59,16 @@ public class GLMTest {
             //row.setTargetCell(targetColumn, row.getTargetCell(targetColumn) == -1 ? 0 : 1); // change output from (-1, +1) to (0, 1)
         }
 
-        TupleTwo<DataFrame, DataFrame> miniFrames = frame.shuffle().split(0.9);
-        //TupleTwo<DataFrame, DataFrame> miniFrames = frame.split(0.9);
-        DataFrame trainingData = miniFrames._1();
-        DataFrame crossValidationData = miniFrames._2();
 
-        //test
-        //DataFrame trainingData = frame;
-        //DataFrame crossValidationData = frame;
+        //splits dataframe into two parts. one will be used to train the program. the other is for testing the algorithm
+        //TupleTwo<DataFrame, DataFrame> miniFrames = frame.shuffle().split(0.9); //shuffles the observations. gives different coefficient everytime
+        //TupleTwo<DataFrame, DataFrame> miniFrames = frame.split(.99);
+        //DataFrame trainingData = miniFrames._1();
+        //DataFrame crossValidationData = miniFrames._2();
 
+
+        DataFrame trainingData = frame;
+        DataFrame crossValidationData = frame;
 
         Glm algorithm = Glm.logistic();
         algorithm.setSolverType(GlmSolverType.GlmIrls);
